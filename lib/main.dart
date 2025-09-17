@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ void main() {
           backgroundColor: Colors.red,
           title: Center(
             child: Text(
-              'Rolly',
+              'roll the dice',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 25.0,
@@ -38,58 +39,62 @@ class DicePage extends StatefulWidget {
 class _DicePageState extends State<DicePage> {
   int leftDiceNumber = 1;
   int rightDiceNumber = 1;
+  bool showText = false;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: TextButton(
-        onPressed: () {
-          final overlayState = Overlay.of(context);
-          final overlayEntry = OverlayEntry(
-            builder: (context) => Positioned(
-              top: 300,
-              left: 0,
-              right: 0,
-              child: Material(
-                color: Colors.transparent,
-                child: Center(
-                  child: Text(
-                    'You rolled a total of ${leftDiceNumber + rightDiceNumber}!',
-                    style: TextStyle(
-                      fontSize: 25.0,
-                      fontFamily: 'Bold',
-                      color: Colors.white,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Visibility(
+            visible: showText,
+            maintainSize: true,
+            maintainAnimation: true,
+            maintainState: true,
+            child: Text(
+              'You rolled a total of ${leftDiceNumber + rightDiceNumber}!',
+              style: TextStyle(
+                fontSize: 25.0,
+                fontFamily: 'Bold',
+                color: Colors.white,
+              ),
+            ),
+          ),
+          SizedBox(height: 20),
+          TextButton(
+            onPressed: () {
+              setState(() {
+                leftDiceNumber = Random().nextInt(6) + 1;
+                rightDiceNumber = Random().nextInt(6) + 1;
+                showText = true;
+              });
+              Timer(Duration(seconds: 4), () {
+                setState(() {
+                  showText = false;
+                });
+              });
+            },
+            child: Row(
+              children: [
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Image.asset('assets/images/dice$leftDiceNumber.png'),
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(10),
+                    child: Image.asset(
+                      'assets/images/dice$rightDiceNumber.png',
                     ),
                   ),
                 ),
-              ),
+              ],
             ),
-          );
-          overlayState.insert(overlayEntry);
-          Future.delayed(const Duration(seconds: 4), () {
-            overlayEntry.remove();
-          });
-          setState(() {
-            leftDiceNumber = Random().nextInt(6) + 1;
-            rightDiceNumber = Random().nextInt(6) + 1;
-          });
-        },
-        child: Row(
-          children: [
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Image.asset('assets/images/dice$leftDiceNumber.png'),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Image.asset('assets/images/dice$rightDiceNumber.png'),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
